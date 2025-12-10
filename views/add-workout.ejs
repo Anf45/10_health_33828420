@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Add Workout</title>
+  </head>
+  <body>
+    <h1>Add a Workout</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/workouts/list">My Workouts</a></li>
+        <li><a href="/users/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <form method="POST" action="/workouts/added">
+      <p>
+        <label>Workout date:
+          <input type="date" name="workout_date" required />
+        </label>
+      </p>
+
+      <p>
+        <label>Category:
+          <select name="category" required>
+            <option value="">-- Select --</option>
+            <option value="Cardio">Cardio</option>
+            <option value="Strength">Strength</option>
+            <option value="Mobility">Mobility</option>
+            <option value="Sport">Sport</option>
+          </select>
+        </label>
+      </p>
+
+      <p>
+        <label>Duration (minutes):
+          <input type="number" name="duration_minutes" min="1" required />
+        </label>
+      </p>
+
+      <p>
+        <label>Intensity:
+          <select name="intensity">
+            <option value="">Not specified</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+      </p>
+
+      <p>
+        <label>Notes:<br />
+          <textarea name="notes" rows="4" cols="40"></textarea>
+        </label>
+      </p>
+
+      <p>
+        <button type="submit">Save Workout</button>
+      </p>
+    </form>
+  </body>
+</html>

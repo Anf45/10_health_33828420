@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Search Workouts</title>
+  </head>
+  <body>
+    <h1>Search Workouts</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/workouts/add">Add Workout</a></li>
+        <li><a href="/workouts/list">My Workouts</a></li>
+        <li><a href="/users/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <form method="GET" action="/workouts/search_results">
+      <p>
+        <label>Keyword (category or notes):
+          <input type="text" name="keyword" />
+        </label>
+      </p>
+
+      <p>
+        <label>From date:
+          <input type="date" name="from_date" />
+        </label>
+      </p>
+
+      <p>
+        <label>To date:
+          <input type="date" name="to_date" />
+        </label>
+      </p>
+
+      <p>
+        <button type="submit">Search</button>
+      </p>
+    </form>
+  </body>
+</html>

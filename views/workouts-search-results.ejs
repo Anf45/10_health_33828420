@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Search Results</title>
+  </head>
+  <body>
+    <h1>Search Results</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/workouts/add">Add Workout</a></li>
+        <li><a href="/workouts/list">My Workouts</a></li>
+        <li><a href="/workouts/search">Search Workouts</a></li>
+        <li><a href="/users/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <section>
+      <h3>Your search</h3>
+      <p>
+        Keyword:
+        <strong><%= keyword || 'none' %></strong><br />
+        From:
+        <strong><%= from_date || 'not set' %></strong><br />
+        To:
+        <strong><%= to_date || 'not set' %></strong>
+      </p>
+    </section>
+
+    <% if (!workouts || workouts.length === 0) { %>
+      <p>No workouts matched your search.</p>
+      <p><a href="/workouts/search">Try another search</a></p>
+    <% } else { %>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Duration (min)</th>
+            <th>Intensity</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% workouts.forEach(function(w) { %>
+            <tr>
+              <td><%= w.workout_date.toISOString().slice(0, 10) %></td>
+              <td><%= w.category %></td>
+              <td><%= w.duration_minutes %></td>
+              <td><%= w.intensity || '' %></td>
+              <td><%= w.notes || '' %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </body>
+</html>

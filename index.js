@@ -14,6 +14,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
+
 app.use(
   session({
     secret: 'someSuperSecretString', 
@@ -39,9 +40,13 @@ global.db = db;
 
 const mainRoutes = require('./routes/main');
 const userRoutes = require('./routes/users');
+const workoutRoutes = require('./routes/workouts');
+
 
 app.use('/', mainRoutes);
 app.use('/users', userRoutes);
+app.use('/workouts', workoutRoutes);
+
 
 
 // start server
