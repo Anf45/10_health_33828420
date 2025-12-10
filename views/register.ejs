@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Register</title>
+  </head>
+  <body>
+    <h1>Register</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/users/login">Login</a></li>
+      </ul>
+    </nav>
+
+    <form method="POST" action="/users/registered">
+      <p>
+        <label>Username:
+          <input type="text" name="username" required />
+        </label>
+      </p>
+      <p>
+        <label>First name:
+          <input type="text" name="first_name" />
+        </label>
+      </p>
+      <p>
+        <label>Last name:
+          <input type="text" name="last_name" />
+        </label>
+      </p>
+      <p>
+        <label>Email:
+          <input type="email" name="email" />
+        </label>
+      </p>
+      <p>
+        <label>Password:
+          <input type="password" name="password" required />
+        </label>
+      </p>
+      <p>
+        <button type="submit">Register</button>
+      </p>
+    </form>
+  </body>
+</html>

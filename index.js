@@ -1,3 +1,5 @@
+const session = require('express-session');
+
 const mysql = require('mysql2');
 
 const express = require('express');
@@ -7,7 +9,22 @@ const app = express();
 const port = 8000;
 
 app.set('view engine', 'ejs');
-//
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: 'someSuperSecretString', 
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 600000, // 10 mins
+    },
+  })
+);
+
 const db = mysql.createPool({
   host: process.env.HEALTH_HOST || 'localhost',
   user: process.env.HEALTH_USER || 'health_app',
@@ -20,15 +37,12 @@ const db = mysql.createPool({
 
 global.db = db;
 
-
-app.set('views', path.join(__dirname, 'views'));
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(express.urlencoded({ extended: true }));
-
 const mainRoutes = require('./routes/main');
+const userRoutes = require('./routes/users');
+
 app.use('/', mainRoutes);
+app.use('/users', userRoutes);
+
 
 // start server
 app.listen(port, () => {

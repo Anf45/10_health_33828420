@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Login</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/users/register">Register</a></li>
+      </ul>
+    </nav>
+
+    <form method="POST" action="/users/loggedin">
+      <p>
+        <label>Username:
+          <input type="text" name="username" required />
+        </label>
+      </p>
+      <p>
+        <label>Password:
+          <input type="password" name="password" required />
+        </label>
+      </p>
+      <p>
+        <button type="submit">Login</button>
+      </p>
+    </form>
+  </body>
+</html>
