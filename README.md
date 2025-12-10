@@ -41,9 +41,9 @@ Built with Node.js, Express, EJS, MySQL, deployed on the Goldsmiths VM using for
 
 ## Database
 
-users -> stores user accounts
-workouts -> 1 to many relationship with users
-audit_log -> stores login/logout events (only admin)
+    users -> stores user accounts
+    workouts -> 1 to many relationship with users
+    audit_log -> stores login/logout events (only admin)
 
 ## Local Setup
 
