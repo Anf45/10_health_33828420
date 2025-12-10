@@ -6,6 +6,15 @@ const saltRounds = 10;
 
 const { check, validationResult } = require('express-validator');
 
+function logAudit(username, action, success = 1) {
+  const sql = "INSERT INTO audit_log (username, action, success) VALUES (?, ?, ?)";
+  db.query(sql, [username, action, success], (err) => {
+    if (err) {
+      console.error("Audit log error:", err);
+    }
+  });
+}
+
 
 const appData = {
   appName: 'Workout Logger',
@@ -105,6 +114,8 @@ router.post('/loggedin', (req, res, next) => {
     }
 
     if (results.length === 0) {
+      logAudit(username, "login_failed", 0);
+
       // no such user
       return res.send('Login failed: invalid username or password.');
     }
@@ -116,9 +127,13 @@ router.post('/loggedin', (req, res, next) => {
         return next(bcryptErr);
       }
 
-      if (!match) {
-        return res.send('Login failed: invalid username or password.');
-      }
+        if (!match) {
+        logAudit(username, "login_failed", 0);
+        return res.send("Login failed: invalid username or password.");
+        }
+
+        // Login success:
+        logAudit(username, "login_success", 1);
 
       // password correct
       req.session.userId = user.id;
@@ -133,12 +148,37 @@ router.post('/loggedin', (req, res, next) => {
 
 // destroy session
 router.get('/logout', (req, res) => {
+  const username = req.session.username || "unknown";
+
+  logAudit(username, "logout", 1);
+
   req.session.destroy((err) => {
     if (err) {
-      return res.send('Error logging out.');
+      return res.send("Error logging out.");
     }
     res.send('You are now logged out. <a href="/">Return home</a>.');
   });
 });
+
+// logged in users to see audit
+router.get('/audit', redirectLogin, (req, res, next) => {
+    // admin
+  if (req.session.username !== "gold") {
+    return res.send("Access denied: only admin can view audit log.");
+  }
+
+  const sql = "SELECT username, action, success, created_at FROM audit_log ORDER BY created_at DESC";
+
+  db.query(sql, (err, results) => {
+    if (err) return next(err);
+
+    res.render("audit.ejs", {
+      appName: appData.appName,
+      logs: results,
+      user: req.session.username
+    });
+  });
+});
+
 
 module.exports = router;

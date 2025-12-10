@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= appName %> - Audit Log</title>
+  </head>
+  <body>
+    <h1>Audit Log</h1>
+
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/workouts/list">My Workouts</a></li>
+        <li><a href="/users/logout">Logout</a></li>
+      </ul>
+    </nav>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Action</th>
+          <th>Success?</th>
+          <th>Date/Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach(function(log) { %>
+          <tr>
+            <td><%= log.username %></td>
+            <td><%= log.action %></td>
+            <td><%= log.success === 1 ? "Yes" : "No" %></td>
+            <td><%= log.created_at.toISOString().replace("T", " ").slice(0, 19) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </body>
+</html>

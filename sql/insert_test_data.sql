@@ -1,11 +1,13 @@
 USE health;
 
--- temp
 INSERT INTO users (username, first_name, last_name, email, hashed_password)
 VALUES
 ('demo', 'Demo', 'User', 'demo@example.com', 'changeme');
 
--- example
+INSERT INTO users (username, first_name, last_name, email, hashed_password)
+VALUES
+('gold', 'Gold', 'Marker', 'gold@example.com', '$2b$10$CwsKsCgEhvbpqWQFZP3efueyEsnvw/HVkPaua9jGB83Eg8bYJXHH.');
+
 INSERT INTO workouts (user_id, workout_date, category, duration_minutes, intensity, notes)
 VALUES
 (1, '2025-12-01', 'Cardio', 30, 'medium', 'Easy run'),
