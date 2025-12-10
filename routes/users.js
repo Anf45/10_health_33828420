@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const saltRounds = 10;
 
+const { check, validationResult } = require('express-validator');
+
+
 const appData = {
   appName: 'Workout Logger',
 };
@@ -22,38 +25,69 @@ router.get('/register', (req, res) => {
 });
 
 // handle registration form
-router.post('/registered', (req, res, next) => {
-  const { username, first_name, last_name, email, password } = req.body;
-
-  if (!username || !password) {
-    return res.send('Username and password are required');
-  }
-
-  // password hash
-  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
-    if (err) {
-      return next(err);
+router.post(
+  '/registered',
+  [
+    // validation
+    check('username')
+      .isLength({ min: 3, max: 20 })
+      .withMessage('Username must be between 3 and 20 characters.'),
+    check('email')
+      .optional({ checkFalsy: true })
+      .isEmail()
+      .withMessage('Please enter a valid email address.'),
+    check('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters long.'),
+  ],
+  (req, res, next) => {
+    // validation result
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const msgs = errors
+        .array()
+        .map((e) => `<li>${e.msg}</li>`)
+        .join('');
+      return res.send(
+        `<h1>Registration error</h1><ul>${msgs}</ul><p><a href="/users/register">Go back</a></p>`
+      );
     }
 
-    const sql =
-      'INSERT INTO users (username, first_name, last_name, email, hashed_password) VALUES (?, ?, ?, ?, ?)';
-    const params = [username, first_name, last_name, email, hashedPassword];
+    // sanitise inputs
+    const username = req.sanitize(req.body.username);
+    const first_name = req.sanitize(req.body.first_name || '');
+    const last_name = req.sanitize(req.body.last_name || '');
+    const email = req.sanitize(req.body.email || '');
+    const password = req.body.password; 
 
-    db.query(sql, params, (dbErr, result) => {
-      if (dbErr) {
-        // e.g. duplicate username
-        if (dbErr.code === 'ER_DUP_ENTRY') {
-          return res.send('That username is already taken. Please go back and choose another.');
-        }
-        return next(dbErr);
+    // hash password
+    bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+      if (err) {
+        return next(err);
       }
 
-      res.send(
-        `Hello ${first_name || ''} ${last_name || ''} – your account has been created. <a href="/users/login">Login here</a>.`
-      );
+      const sql =
+        'INSERT INTO users (username, first_name, last_name, email, hashed_password) VALUES (?, ?, ?, ?, ?)';
+      const params = [username, first_name, last_name, email, hashedPassword];
+
+      db.query(sql, params, (dbErr, result) => {
+        if (dbErr) {
+          if (dbErr.code === 'ER_DUP_ENTRY') {
+            return res.send(
+              'That username is already taken. Please go back and choose another.'
+            );
+          }
+          return next(dbErr);
+        }
+
+        res.send(
+          `Hello ${first_name} ${last_name} – your account has been created. <a href="/users/login">Login here</a>.`
+        );
+      });
     });
-  });
-});
+  }
+);
+
 
 // login form
 router.get('/login', (req, res) => {

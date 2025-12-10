@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { check, validationResult } = require('express-validator');
+
 
 const appData = {
   appName: 'Workout Logger',
@@ -13,36 +15,63 @@ const redirectLogin = (req, res, next) => {
   next();
 };
 
-// GET form to add a workout
+// form to add a workout
 router.get('/add', redirectLogin, (req, res) => {
   res.render('add-workout.ejs', appData);
 });
 
 // save workout to DB
-router.post('/added', redirectLogin, (req, res, next) => {
-  const userId = req.session.userId;
-  const { workout_date, category, duration_minutes, intensity, notes } = req.body;
-
-  if (!workout_date || !category || !duration_minutes) {
-    return res.send('Workout date, category and duration are required.');
-  }
-
-  const durationInt = parseInt(duration_minutes, 10) || 0;
-
-  const sql =
-    'INSERT INTO workouts (user_id, workout_date, category, duration_minutes, intensity, notes) VALUES (?, ?, ?, ?, ?, ?)';
-  const params = [userId, workout_date, category, durationInt, intensity || null, notes || null];
-
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      return next(err);
+router.post(
+  '/added',
+  redirectLogin,
+  [
+    check('workout_date')
+      .notEmpty()
+      .withMessage('Workout date is required.'),
+    check('category')
+      .notEmpty()
+      .withMessage('Category is required.'),
+    check('duration_minutes')
+      .isInt({ min: 1, max: 1440 })
+      .withMessage('Duration must be a number between 1 and 1440 minutes.'),
+  ],
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const msgs = errors
+        .array()
+        .map((e) => `<li>${e.msg}</li>`)
+        .join('');
+      return res.send(
+        `<h1>Workout error</h1><ul>${msgs}</ul><p><a href="/workouts/add">Go back</a></p>`
+      );
     }
 
-    res.send(
-      `Workout added successfully! <br><a href="/workouts/list">View your workouts</a> | <a href="/workouts/add">Add another</a>`
-    );
-  });
-});
+    const userId = req.session.userId;
+
+    // sanitize
+    const workout_date = req.sanitize(req.body.workout_date);
+    const category = req.sanitize(req.body.category);
+    const durationInt = parseInt(req.body.duration_minutes, 10) || 0;
+    const intensity = req.sanitize(req.body.intensity || '');
+    const notes = req.sanitize(req.body.notes || '');
+
+    const sql =
+      'INSERT INTO workouts (user_id, workout_date, category, duration_minutes, intensity, notes) VALUES (?, ?, ?, ?, ?, ?)';
+    const params = [userId, workout_date, category, durationInt, intensity, notes];
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        return next(err);
+      }
+
+      res.send(
+        `Workout added successfully! <br><a href="/workouts/list">View your workouts</a> | <a href="/workouts/add">Add another</a>`
+      );
+    });
+  }
+);
+
 
 // workouts for current user
 router.get('/list', redirectLogin, (req, res, next) => {
