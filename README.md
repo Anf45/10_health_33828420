@@ -5,21 +5,21 @@ Built with Node.js, Express, EJS, MySQL, deployed on the Goldsmiths VM using for
 
 ## Features
   
-    User registration and secure login (bcrypt + sessions)
+  User registration and secure login (bcrypt + sessions)
     
-    Add workouts (date, category, duration, intensity, notes)
+  Add workouts (date, category, duration, intensity, notes)
+  
+  View and search workouts (keyword + date range)
     
-    View and search workouts (keyword + date range)
+  Validation and sanitisation on all forms
+  
+  Audit logging for login success/failure and logout
     
-    Validation and sanitisation on all forms
+  Admin only audit page
     
-    Audit logging for login success/failure and logout
+  Private data: users only see their own workouts
     
-    Admin only audit page
-    
-    Private data: users only see their own workouts
-    
-    Installation via create_db.sql and insert_test_data.sql
+  Installation via create_db.sql and insert_test_data.sql
     
 ## Structure
     
@@ -41,9 +41,9 @@ Built with Node.js, Express, EJS, MySQL, deployed on the Goldsmiths VM using for
 
 ## Database
 
-  users -> stores user accounts
-  workouts -> 1 to many relationship with users
-  audit_log -> stores login/logout events (only admin)
+users -> stores user accounts
+workouts -> 1 to many relationship with users
+audit_log -> stores login/logout events (only admin)
 
 ## Local Setup
 
